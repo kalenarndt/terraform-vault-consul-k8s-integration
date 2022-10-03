@@ -20,6 +20,6 @@ jobs:
       - uses: ncipollo/release-action@v1.10.0
         with:
           generateReleaseNotes: true
-          name: '${{ github.ref_name }}'
+          name: 'v${{ github.ref_name }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
