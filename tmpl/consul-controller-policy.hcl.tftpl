@@ -1,0 +1,7 @@
+path "${consul_controller_path}/issue/${consul_controller_role}" {
+  capabilities = ["create", "update"]
+}
+
+path "${consul_controller_path}/cert/ca" {
+  capabilities = ["read"]
+}
