@@ -252,19 +252,10 @@ locals {
     verify: true
     caCert:
       secretName: "${try(var.consul.consul_server.enabled, false) == true ? var.consul.consul_server.path : ""}/cert/ca"
-    consulSidecarContainer:
-      Resources:
-        consul.hashicorp.com/consul-sidecar-cpu-limit: "100m"
-        consul.hashicorp.com/consul-sidecar-cpu-request: "50m"
 
 server:
   serverCert:
     secretName: "${try(var.consul.consul_server.enabled, false) == true ? var.consul.consul_server.path : ""}/issue/${try(var.consul.consul_server.enabled, false) == true ? var.consul.consul_server.vault_role_name : ""}"
   connect: true
-  securityContext:
-    runAsNonRoot: false
-    runAsGroup: 0
-    runAsUser: 0
-  affinity: null
   EOF
 }
