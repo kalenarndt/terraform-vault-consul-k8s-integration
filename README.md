@@ -5,7 +5,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.2.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~>3.4.3 |
 | <a name="requirement_vault"></a> [vault](#requirement\_vault) | ~>3.8.2 |
 
@@ -64,5 +64,5 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_helm"></a> [helm](#output\_helm) | n/a |
+| <a name="output_helm"></a> [helm](#output\_helm) | Sample helm values file that contains all of the configured paths that were created with this module. This should be used a reference and not a raw input to another object |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
