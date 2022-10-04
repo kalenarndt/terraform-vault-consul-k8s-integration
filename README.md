@@ -1,4 +1,14 @@
-# terraform-vault-consul-integration
+# terraform-vault-consul-k8s-integration
+
+> **Warning**
+> This module is under active development
+This module assumes you have a kubernetes auth method already configured in Vault
+
+This module builds the Root CA, Server TLS Intermediate, Consul Connect Intermediate, Connect Inject Intermediate, Controller Intermediate, KV Secrets Engine, Bootstrap Tokens, Gossip Tokens, Consul Licenses, Vault Policies, Kubernetes Roles for authentication with the policies associated, and outputs a sample helm values file.
+
+> **Note**
+> This module doesn't support BYO policies for Vault. If you want to modify the policy files they are located in the `tmpl` directory.
+> If you disable Consul Connect please make sure you remove the policy reference in the object map for `consul_server` or the templating will fail
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

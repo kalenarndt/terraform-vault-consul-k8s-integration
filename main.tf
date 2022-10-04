@@ -1,7 +1,7 @@
 locals {
   consul_enabled = {
-    for k, v in var.consul : k => v
-    if try(v.path, "") != "" && try(v.enabled, false) == true
+    for integration, values in var.consul : integration => values
+    if try(values.path, "") != "" && try(values.enabled, false) == true
   }
 
   consul_roles = {
@@ -121,16 +121,17 @@ resource "vault_pki_secret_backend_intermediate_set_signed" "inter_ca" {
 
 
 resource "vault_pki_secret_backend_role" "inter_ca" {
-  for_each         = { for k, v in local.consul_enabled : k => v if try(v.allowed_domains, [""]) != [""] }
-  namespace        = var.namespace
-  backend          = vault_mount.inter_ca[each.key].path
-  name             = each.key
-  max_ttl          = each.value.pki_max_ttl
-  allow_ip_sans    = true
-  allowed_domains  = each.value.allowed_domains
-  allow_subdomains = true
-  allow_localhost  = true
-  generate_lease   = true
+  for_each           = { for k, v in local.consul_enabled : k => v if try(v.allowed_domains, [""]) != [""] }
+  namespace          = var.namespace
+  backend            = vault_mount.inter_ca[each.key].path
+  name               = each.value.vault_role_name
+  max_ttl            = each.value.pki_max_ttl
+  allow_ip_sans      = true
+  allowed_domains    = each.value.allowed_domains
+  allow_subdomains   = true
+  allow_localhost    = true
+  allow_bare_domains = true
+  generate_lease     = true
 }
 
 
@@ -200,11 +201,11 @@ resource "vault_kv_secret_v2" "consul_license" {
 
 locals {
   outputs = <<EOF
-  global:
-    image: "hashicorp/consul-enterprise:1.12.3-ent"
-    datacenter: dc1
-    name: consul
-    domain: consul
+global:
+  image: "hashicorp/consul-enterprise:1.12.3-ent"
+  datacenter: dc1
+  name: consul
+  domain: consul
   enterpriseLicense:
     secretName: ${var.kv_path}/data/${vault_kv_secret_v2.consul_license.name}
     secretKey: license
@@ -220,14 +221,14 @@ locals {
       connectInjectRole: ${try(var.consul.consul_connect_inject.enabled, false) == true ? var.consul.consul_connect_inject.vault_role_name : ""}
       controller:
         caCert:
-          secretName: "${try(var.consul.consul_controller.enabled, false) == true ? var.consul.consul_controller.path : ""}/cert/ca
+          secretName: "${try(var.consul.consul_controller.enabled, false) == true ? var.consul.consul_controller.path : ""}/cert/ca"
         tlsCert:
           secretName: "${try(var.consul.consul_controller.enabled, false) == true ? var.consul.consul_controller.path : ""}/issue/${try(var.consul.consul_controller.enabled, false) == true ? var.consul.consul_controller.vault_role_name : ""}"
       connectInject:
         caCert:
           secretName: "${try(var.consul.consul_connect_inject.enabled, false) == true ? var.consul.consul_connect_inject.path : ""}/cert/ca"
         tlsCert:
-          secretName: "${try(var.consul.consul_connect_inject.enabled, false) == true ? var.consul.consul_connect_inject.path : ""}/issue/${try(var.consul.consul_controller.enabled, false) == true ? var.consul.consul_controller.vault_role_name : ""}"
+          secretName: "${try(var.consul.consul_connect_inject.enabled, false) == true ? var.consul.consul_connect_inject.path : ""}/issue/${try(var.consul.consul_connect_inject.enabled, false) == true ? var.consul.consul_connect_inject.vault_role_name : ""}"
       connectCA:
         address: ${var.vault_url}
         rootPKIPath: ${var.root_ca_path}/
@@ -257,5 +258,5 @@ server:
   serverCert:
     secretName: "${try(var.consul.consul_server.enabled, false) == true ? var.consul.consul_server.path : ""}/issue/${try(var.consul.consul_server.enabled, false) == true ? var.consul.consul_server.vault_role_name : ""}"
   connect: true
-  EOF
+EOF
 }
