@@ -1,21 +1,20 @@
 locals {
+  # Map of integrations that are enabled and have a path. This is used for setting up all the PKI paths
   consul_enabled = {
     for integration, values in var.consul : integration => values
     if try(values.path, "") != "" && try(values.enabled, false) == true
   }
 
+  # Map of integrations that are enabled that have a vault_role_name. This is used for creating the roles under the Kubernetes auth method
   consul_roles = {
-    for k, v in var.consul : k => v
-    if try(v.enabled, false) == true && try(v.vault_role_name, "") != ""
+    for role, role_name in var.consul : role => role_name
+    if try(role_name.enabled, false) == true && try(role_name.vault_role_name, "") != ""
   }
-}
 
-locals {
-
+  # Filtered map for enabled integrations, with a role name and consul connect
   enabled_integrations = {
     for k, v in var.consul : k => v if try(v.enabled, false) == true && try(v.vault_role_name, "") != "" || try(v.enabled, false) == true && try(k, "") == "consul_connect"
   }
-
 
   # Map of enabled integrations and their paths used for templating Vault policies
   consul_paths = {
@@ -35,10 +34,10 @@ locals {
     for k, v in local.enabled_integrations : k => v.vault_role_policies if try(v.vault_role_policies, null) != null
   })))
 
-  # for_each that templates out all the files
+  # for_each that templates out all the files in ./tmpl for the
   policy_templates = {
-    for k, v in local.enabled_role_policies : v => {
-      template = templatefile("${path.module}/tmpl/${v}.hcl.tftpl", local.merged),
+    for integration, policy_template in local.enabled_role_policies : policy_template => {
+      template = templatefile("${path.module}/tmpl/${policy_template}.hcl.tftpl", local.merged),
     }
   }
 }
@@ -73,7 +72,6 @@ resource "vault_pki_secret_backend_root_cert" "root_ca" {
   common_name = var.root_ca_common_name
 }
 
-# I need to work through the structuring for this
 resource "vault_mount" "inter_ca" {
   for_each                  = local.consul_enabled
   namespace                 = var.namespace
@@ -84,7 +82,6 @@ resource "vault_mount" "inter_ca" {
   default_lease_ttl_seconds = each.value.pki_default_ttl
 }
 
-# Need to work on the variable structuring
 resource "vault_pki_secret_backend_config_urls" "inter_ca" {
   for_each                = local.consul_enabled
   namespace               = var.namespace
@@ -93,7 +90,6 @@ resource "vault_pki_secret_backend_config_urls" "inter_ca" {
   crl_distribution_points = ["${var.vault_url}/v1/${vault_mount.inter_ca[each.key].path}/crl"]
 }
 
-# Need to work on the logic and variable structuring here
 resource "vault_pki_secret_backend_intermediate_cert_request" "inter_ca" {
   for_each    = local.consul_enabled
   namespace   = var.namespace
@@ -102,7 +98,6 @@ resource "vault_pki_secret_backend_intermediate_cert_request" "inter_ca" {
   common_name = each.value.common_name
 }
 
-# Need to work on the logic and variable structuring here
 resource "vault_pki_secret_backend_root_sign_intermediate" "inter_ca" {
   for_each             = local.consul_enabled
   backend              = vault_mount.root_ca.path
@@ -134,7 +129,6 @@ resource "vault_pki_secret_backend_role" "inter_ca" {
   generate_lease     = true
 }
 
-
 data "vault_auth_backend" "kubernetes" {
   namespace = var.namespace
   path      = var.vault_kubernetes_auth_path
@@ -146,7 +140,6 @@ resource "vault_policy" "policies" {
   name      = each.key
   policy    = each.value.template
 }
-
 
 resource "vault_kubernetes_auth_backend_role" "roles" {
   for_each                         = local.consul_roles
