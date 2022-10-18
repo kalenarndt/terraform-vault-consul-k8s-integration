@@ -14,10 +14,10 @@ Super open to PRs on this module or even code reviews. Go forth and fork!
 
 ## TODO
 
-[ ] Optimize Locals (Reduce the amount)
-[ ] Change local `k,v` references to be something that is easier to read
-[ ] Work on dynamic evaluation of supplied policies in `vault_role_policies` where if a role isn't enabled but is referenced it should be filtered and removed so templating doesn't fail
-[ ] Use `templatefile` for generating output that reflects what was configured. Currently it wont template the path if it isn't configured but doesn't remove the section in the sample helm values
+- [ ] Optimize Locals (Reduce the amount)
+- [ ] Change local `k,v` references to be something that is easier to read
+- [ ] Work on dynamic evaluation of supplied policies in `vault_role_policies` where if a role isn't enabled but is referenced it should be filtered and removed so templating doesn't fail
+- [ ] Use `templatefile` for generating output that reflects what was configured. Currently it wont template the path if it isn't configured but doesn't remove the section in the sample helm values
 
 ---
 
