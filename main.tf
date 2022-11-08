@@ -73,7 +73,8 @@ resource "vault_pki_secret_backend_root_cert" "root_ca" {
 }
 
 resource "vault_mount" "inter_ca" {
-  for_each                  = local.consul_enabled
+  for_each = local.consul_enabled
+
   namespace                 = var.namespace
   path                      = each.value.path
   type                      = "pki"
@@ -83,7 +84,8 @@ resource "vault_mount" "inter_ca" {
 }
 
 resource "vault_pki_secret_backend_config_urls" "inter_ca" {
-  for_each                = local.consul_enabled
+  for_each = local.consul_enabled
+
   namespace               = var.namespace
   backend                 = vault_mount.inter_ca[each.key].path
   issuing_certificates    = ["${var.vault_url}/v1/${vault_mount.inter_ca[each.key].path}/ca"]
@@ -91,7 +93,8 @@ resource "vault_pki_secret_backend_config_urls" "inter_ca" {
 }
 
 resource "vault_pki_secret_backend_intermediate_cert_request" "inter_ca" {
-  for_each    = local.consul_enabled
+  for_each = local.consul_enabled
+
   namespace   = var.namespace
   backend     = vault_mount.inter_ca[each.key].path
   type        = vault_pki_secret_backend_root_cert.root_ca.type
@@ -99,7 +102,9 @@ resource "vault_pki_secret_backend_intermediate_cert_request" "inter_ca" {
 }
 
 resource "vault_pki_secret_backend_root_sign_intermediate" "inter_ca" {
-  for_each             = local.consul_enabled
+  for_each = local.consul_enabled
+
+  namespace            = var.namespace
   backend              = vault_mount.root_ca.path
   csr                  = vault_pki_secret_backend_intermediate_cert_request.inter_ca[each.key].csr
   common_name          = each.value.common_name
@@ -109,14 +114,17 @@ resource "vault_pki_secret_backend_root_sign_intermediate" "inter_ca" {
 }
 
 resource "vault_pki_secret_backend_intermediate_set_signed" "inter_ca" {
-  for_each    = local.consul_enabled
+  for_each = local.consul_enabled
+
+  namespace   = var.namespace
   backend     = vault_mount.inter_ca[each.key].path
   certificate = vault_pki_secret_backend_root_sign_intermediate.inter_ca[each.key].certificate
 }
 
 
 resource "vault_pki_secret_backend_role" "inter_ca" {
-  for_each           = { for k, v in local.consul_enabled : k => v if try(v.allowed_domains, [""]) != [""] }
+  for_each = { for k, v in local.consul_enabled : k => v if try(v.allowed_domains, [""]) != [""] }
+
   namespace          = var.namespace
   backend            = vault_mount.inter_ca[each.key].path
   name               = each.value.vault_role_name
@@ -135,14 +143,16 @@ data "vault_auth_backend" "kubernetes" {
 }
 
 resource "vault_policy" "policies" {
-  for_each  = local.policy_templates
+  for_each = local.policy_templates
+
   namespace = var.namespace
   name      = each.key
   policy    = each.value.template
 }
 
 resource "vault_kubernetes_auth_backend_role" "roles" {
-  for_each                         = local.consul_roles
+  for_each = local.consul_roles
+
   namespace                        = var.namespace
   backend                          = data.vault_auth_backend.kubernetes.path
   role_name                        = each.value.vault_role_name

@@ -97,5 +97,24 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_bootstrap-token-name"></a> [bootstrap-token-name](#output\_bootstrap-token-name) | n/a |
+| <a name="output_bootstrap-token-path"></a> [bootstrap-token-path](#output\_bootstrap-token-path) | Vault path to the Consul ACL Bootstrap Token |
+| <a name="output_consul-ca-role"></a> [consul-ca-role](#output\_consul-ca-role) | Vault role for Consul CA to use |
+| <a name="output_consul-client-role"></a> [consul-client-role](#output\_consul-client-role) | Vault role for Consul Client to use |
+| <a name="output_consul-connect-inject-ca-path"></a> [consul-connect-inject-ca-path](#output\_consul-connect-inject-ca-path) | Vault path to the Consul Controller Intermediate CA |
+| <a name="output_consul-connect-inject-path"></a> [consul-connect-inject-path](#output\_consul-connect-inject-path) | Vault path to the Consul Connect Inject Intermediate PKI path. Used to generate certificates |
+| <a name="output_consul-connect-inject-role"></a> [consul-connect-inject-role](#output\_consul-connect-inject-role) | Vault role for Consul Connect Inject to use |
+| <a name="output_consul-connect-path"></a> [consul-connect-path](#output\_consul-connect-path) | Vault path to the Consul Connect Intermediate CA |
+| <a name="output_consul-controller-ca-path"></a> [consul-controller-ca-path](#output\_consul-controller-ca-path) | Vault path to the Consul Root CA |
+| <a name="output_consul-controller-path"></a> [consul-controller-path](#output\_consul-controller-path) | Vault path to the Consul Controller Intermediate PKI path. Used to generate certificates |
+| <a name="output_consul-controller-role"></a> [consul-controller-role](#output\_consul-controller-role) | Vault role for Consul Controller to use |
+| <a name="output_consul-root-ca-path"></a> [consul-root-ca-path](#output\_consul-root-ca-path) | Vault path to the Consul Root CA |
+| <a name="output_consul-server-acl-role"></a> [consul-server-acl-role](#output\_consul-server-acl-role) | Vault role for Consul Manage System ACLs to use |
+| <a name="output_consul-server-ca-path"></a> [consul-server-ca-path](#output\_consul-server-ca-path) | Vault path to the Consul Server Intermediate CA |
+| <a name="output_consul-server-path"></a> [consul-server-path](#output\_consul-server-path) | Vault path to the Consul Server Intermediate PKI path. Used to generate certificates |
+| <a name="output_consul-server-role"></a> [consul-server-role](#output\_consul-server-role) | Vault role for Consul Server to use |
+| <a name="output_enterprise-license-path"></a> [enterprise-license-path](#output\_enterprise-license-path) | Vault path to the Consul Enterprise License |
+| <a name="output_gossip-token-path"></a> [gossip-token-path](#output\_gossip-token-path) | Vault path to the Consul Gossip Token |
 | <a name="output_helm"></a> [helm](#output\_helm) | Sample helm values file that contains all of the configured paths that were created with this module. This should be used a reference and not a raw input to another object |
+| <a name="output_kv-path"></a> [kv-path](#output\_kv-path) | Vault KV Path for the static secrets Consul is using |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
