@@ -130,6 +130,29 @@ variable "consul" {
     }), {})
   })
   description = "(Required) Object map of all of the integrations that will be configured in HashiCorp Vault. This does not support configuring your own policies. If you are disabling specific services (Connect) ensure that you remove the corresponding policy assocations from the other sub-entries (consul_server). By default, the inputs required for this are only enabled=true for the object to create the other secrets engines and policies. Policies are located in the tmpl folder if you would like to inspect them."
+  default = {
+    consul_ca = {
+      enabled = true
+    }
+    consul_client = {
+      enabled = true
+    }
+    consul_connect = {
+      enabled = true
+    }
+    consul_connect_inject = {
+      enabled = true
+    }
+    consul_controller = {
+      enabled = true
+    }
+    consul_server = {
+      enabled = true
+    }
+    consul_server_acl = {
+      enabled = true
+    }
+  }
 }
 
 variable "vault_kubernetes_auth_path" {
